@@ -1,0 +1,5 @@
+1.1. (execute (call .substring (string "compositionality is key") (number 0) (call .indexOf (string "compositionality is key") (string " "))))
+
+1.2.  (execute ((lambda x  (call .substring (var x) (number 0) (call .indexOf (var x) (string " ")))) (string "compositionality is key")))
+
+      (execute ((lambda x  (call .substring (var x) (number 0) (call .indexOf (var x) (string " ")))) (string "whatever you say")))
