@@ -133,6 +133,13 @@ can be too coarse or too fine.
 3. Figure 2 is probably the most important element in this paper. It gives us an explicit
 instantiation of why SGD (Figure 1) works.
 
+4. The SVM latent objective function (Equation 4) for denotations 
+is a slight modification of the SGD objective function for the logical form.
+
+5. The distributed representation represents objects as matrices and vectors, which
+permits shades of meaning. A neural network and its corresponding parameters are described;
+in order to learn these parameters, one performs stochastic gradient descent via
+a cross-entropy objective function.
 
 \section{Formalism}
 
@@ -166,7 +173,7 @@ the weight vector, it should often output $y$).
 It is important to understand the following sentences from this paper: "To understand the
 loss on a single $(x,y)$ pair, first note that the loss is zero when the score of the
 correct output ($\textrm{Score}_{\textbf{w}}(x,y)$) exceeds that of any incorrect output 
-($\textrm{Score}_{\textbf{w}}(x,y')$ for $y' \neq y$ by at least $c(y,y') = 1$. Otherwise,
+($\textrm{Score}_{\textbf{w}}(x,y')$ for $y' \neq y$) by at least $c(y,y') = 1$. Otherwise,
 we pay linearly in the amount by which the former fall shorts of the latter." As we seek
 to minimize the loss function, this gives us an intuitive idea of why solving this
 optimization problem does indeed push us in the direction of favoring correct outputs
