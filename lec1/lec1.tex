@@ -143,20 +143,8 @@ a cross-entropy objective function.
 
 \section{Formalism}
 
-The most important theoretical ingredient in this paper is SGD (Figure 1). It should be noted
-that this is not the most traditional formulation of SGD -- the most common form 
-involves a gradient symbol, while this form of SGD does not. It is not 
-obvious to me why $\phi(x,y) - \phi(x,\tilde{y})$ should push the weight vector
-in the direction of the correct $y$. As the feature vector is pre-defined, conceivably,
-strange feature vectors could result in the weight vector being pushed in the "wrong" direction. 
-I defer a formal proof of correctness to a reference in this paper (Bottou 2010). However, the explicit demonstration of the algorithm on a very small toy example
-in Figure 2 shows that the algorithm does push the weight vector in the direction
-of favoring the "correct" output from the training set. Going through this 
-example carefully is profitable. 
-
-In this paper, the SVM and neural network
-objective functions are slight modifications of the original SGD optimization problem.
-The original SGD objective function for learning logical forms was:
+The most important theoretical ingredient in this paper is SGD (Figure 1). 
+The original SGD objective function for learning logical forms was: 
 
 \[
   \min_{\textbf{w} \in \R^d} \sum_{(x,y) \in D} \max_{y' \in Y}[\textrm{Score}_{\textbf{w}}(x,y') + c(y,y')] - \textrm{Score}_{\textbf{w}}(x,y)
@@ -170,6 +158,17 @@ outermost part of the objective function. The weight vector should describe our
 training set somewhat accurately (that is to say, if we run a training example $x$ through
 the weight vector, it should often output $y$).
 
+Per Equation 4 from Bottou 2010,  SGD is described by 
+
+\[
+ w_{t+1} = w_t - \gamma_t \nabla_w Q(z_t, w_t)
+\]
+
+Since $Q(z_t, w_t) = \textbf{w} \cdot \phi(x,\tilde{y}) - \textbf{w} \cdot \phi(x,y)$ and
+$\nabla_{\textbf{w}}(Q(z_t, w_t)) = \phi(x, \tilde{y}) - \phi(x,y)$, line 5 in 
+Figure 1 is justified.
+
+
 It is important to understand the following sentences from this paper: "To understand the
 loss on a single $(x,y)$ pair, first note that the loss is zero when the score of the
 correct output ($\textrm{Score}_{\textbf{w}}(x,y)$) exceeds that of any incorrect output 
@@ -178,6 +177,14 @@ we pay linearly in the amount by which the former fall shorts of the latter." As
 to minimize the loss function, this gives us an intuitive idea of why solving this
 optimization problem does indeed push us in the direction of favoring correct outputs
 in our final weight vector.
+
+The explicit demonstration of the algorithm on a very small toy example
+in Figure 2 shows that the algorithm pushes the weight vector in the direction
+of favoring the "correct" output from the training set. Going through this 
+example carefully is profitable. 
+
+In this paper, the SVM and neural network
+objective functions are slight modifications of the original SGD optimization problem.
 
 The SVM objective function, which I will not list here, was used to learn
 denotations. It is quite similar to the logical form objective function. Logical
@@ -205,4 +212,3 @@ Relating to computer programming, a logical form may be considered
 the "program", the denotation a "return value".
 
 \end{document}
-
