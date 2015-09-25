@@ -112,7 +112,7 @@ A nice approach to uncontrolled face detection using convolutional neural networ
 
 1. Computational cost is (still) high.
 
-2. The developed method is a natural extention of the boosted cascade to the domain of neural network. I would imagine that many reseachers have thought of a similar idea for non-frontal face detection.
+2. The developed method is a natural extension of the boosted cascade to the domain of neural network. I would imagine that many researchers have thought of a similar idea for non-frontal face detection.
 
 
 \textbf{Strengths}:
@@ -143,7 +143,7 @@ A nice approach to uncontrolled face detection using convolutional neural networ
 
 They use two shallow nets (12-net, 24net) and one normal net (48-net). The shallow nets correspond to the series of classifier in the cascade step in Viola-Jones. They also apply calibration in-between 12-net and 24-net, and 24-net and 48-net. The calibration is an automated correction of the window so that the detection bounding box is aligned to faces more accurately. The calibration can also be achieved by solving neural net classification problem. 
 
-Although the paper says the kernel size for ConvNet is 3, this should be either 2 or 4; otherwise, the pooling step wouldn?t work, so I'm assuming it's a typo. We chose 2 in 12-net, 4 in 24-net and 48-net in favor of prediction speed. 
+Although the paper says the kernel size for ConvNet is 3, this should be either 2 or 4; otherwise, the pooling step wouldn't work, so I'm assuming it's a typo. We chose 2 in 12-net, 4 in 24-net and 48-net in favor of prediction speed. 
 
 12-net:
 INPUT: 12x12x3, memory:12x12x3=432, weight=0
