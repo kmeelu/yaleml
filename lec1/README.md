@@ -1,1 +1,1 @@
-The paper pdf is located [here](https://www.dropbox.com/s/dncdmagek5gdtrn/mlSemantics15.pdf?dl=0). 
+The paper pdf is located [here](http://web.stanford.edu/~cgpotts/manuscripts/liang-potts-semantics.pdf). 
