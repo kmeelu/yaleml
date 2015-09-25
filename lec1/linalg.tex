@@ -1,0 +1,181 @@
+\documentclass[twoside]{article}
+
+\usepackage{amsmath,amsthm,amssymb,epsfig}
+\usepackage{hyperref}
+\usepackage[numbers]{natbib}
+\usepackage{textcomp}
+\usepackage{listings}
+\usepackage [english]{babel}
+\usepackage [autostyle, english = american]{csquotes}
+\MakeOuterQuote{"}
+
+\theoremstyle{definition}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+\newenvironment{pf}{{\noindent\sc Proof. }}{\qed}
+\newenvironment{map}{\[\begin{array}{cccc}} {\end{array}\]}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\unif}{\operatorname{unif}}
+
+\newcommand{\comment}[1]{}
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem*{exmp}{Example}
+\newtheorem*{prob}{Problem}
+
+\theoremstyle{remark}
+\newtheorem*{rem}{Remark}
+\newtheorem*{note}{Note}
+\newtheorem*{exer}{Exercise}
+
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0 in}
+\setlength{\parskip}{0.1 in}
+\everymath{\displaystyle}
+
+\newcommand{\widgraph}[2]{\includegraphics[keepaspectratio,width=#1]{#2}}
+\newcommand{\widgraphr}[3]{\includegraphics[keepaspectratio,width=#1,angle=#3]{#2}}
+
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf ML Reading Group (Fall 2015) \hfill Lecture: #3} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\Large \hfill #1  \hfill} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\it Lecturer: #2 \hfill} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{#1}{#1}
+   \vspace*{4mm}
+}
+
+
+%%%%%%%
+% Some commonly used notation
+%%%%%%%
+
+\def\R{{\mathbb R}}
+\def\X{{\mathcal X}}
+\def\Y{{\mathcal Y}}
+\def\E{{\mathbb E}}
+\def\pr{{\mathbb P}}
+\def\sign{{\rm sign}}
+
+\newcommand{\percent}{$\%$}
+
+\begin{document}
+
+\lstset{
+  basicstyle=\ttfamily,
+  mathescape
+}
+
+\lecture{Interesting Linear Algebra Problem}{Jonathon Cai}{1}
+
+\section{Today}
+
+-- Compute a linear algebra result using theory
+
+\section{Theory}
+
+\textbf{Theorem} 2.11 from Friedberg, which is true by the definitions of composition of functions and matrix multiplication:
+
+Let $V, W$, and $Z$ be finite-dimensional vector spaces with ordered bases
+$\alpha, \beta,$ and $\gamma$, respectively. Let $T: V \to W$ and $U: W \to Z$ be
+linear transformations. Then
+
+\[
+  [UT]^\gamma_\alpha = [U]^\gamma_\beta[T]^\beta_\alpha
+\]
+
+An explicit example of the above is the following:
+
+Consider $U(f(x)) = f'(x)$ where $U:P_3(\R) \to P_2(\R)$ and $T(f(x)) = \int_0^x f(t) dt$ where $T:P_3(\R) \to P_2(\R)$. $UT = I$, by calculus. 
+
+Let the standard bases of $P_3(\R)$ and $P_2(\R)$ be $\alpha$ and $\beta$ respectively. 
+As an easy exercise, verify \textbf{Theorem} 2.11 with the above example.
+
+\textbf{Theorem} 2.23 from Friedberg:
+
+Let $T$ be a linear operator on a finite-dimensional vector space $V$, and let
+$\beta$ and $\beta'$ be ordered bases for $V$. Suppose that $Q$ is the change
+of coordinate matrix that changes $\beta'$-coordinates into $\beta$-coordinates.
+In other words, $Q = [I]^\beta_{\beta'}$.
+
+Then
+
+\[
+[T]_{\beta'} = Q^{-1}[T]_\beta Q
+\]
+
+\textbf{Proof}:
+
+Let $I$ be the identity transformation on $V$. Then $T = IT = TI$. So, by Theorem 2.11,
+
+$Q[T]_{\beta'} = [I]^\beta_{\beta'}[T]^{\beta'}_{\beta'} = [IT]^{\beta}_{\beta'} = [TI]^\beta_{\beta'} = [T]^\beta_{\beta} [I]^\beta_{\beta'} = [T]_\beta Q$.
+
+Now multiply the left hand side of the first and last terms by $Q^{-1}$. 
+
+A subtle detail of this proof is that $Q$ is \emph{always} invertible. Why is this the case? Refer to \url{http://math.stackexchange.com/questions/25779/rigorously-proving-that-a-change-of-basis-matrix-is-always-invertible} for a great explanation.
+
+
+\section{Problem}
+
+Calculate $Q^{-1} A Q$ without inverting $Q$, entirely by hand, where
+
+$Q = 
+\begin{bmatrix}
+    0 & 0 & 0 & 1 & 0 \\
+    1 & 0 & 0 & 0  & 0 \\
+    0 & 0 & 0 & 0 & 1\\
+    0 & 1 & 0 & 0 & 0\\
+    0 & 0 & 1 & 0 & 0
+\end{bmatrix}
+$ and $A = 
+\begin{bmatrix}
+    1 & 1 & 1 & 1 & 1 \\
+    0 & 1 & 1 & 1 & 1 \\
+    1 & 0 & 1 & 1 & 1 \\
+    1 & 1 & 0 & 1 & 1 \\
+    1 & 1 & 1 & 0 & 1 
+\end{bmatrix}
+$.
+
+\subsection{Solution}
+
+Recognize that $Q$ is the change of basis matrix where $\epsilon$ is the standard basis
+of $\R^5$ and $\gamma = \{e_2, e_4, e_5, e_1, e_3\} = \{\gamma_1, \gamma_2, \gamma_3, \gamma_4 \gamma_5\}$. Consequently we may write $Q$ as
+$[I]^{\epsilon}_{\gamma}$. By theorem 2.23, $Q^{-1} A Q = [A]_{\gamma}$.
+
+So, we would like to compute $A \gamma_1, \ldots, A \gamma_5$ with respect to $\gamma$.
+In order to compute this easily, recognize that $A \gamma_1 = A e_2$. Multiplying, note
+we get the second column of $A$, or $c - e_3$ where $c = e_1 + e_2 + e_3 + e_4 + e_5$.
+Clearly, $c = \gamma_1 + \ldots + \gamma_5$ as well. And remember that $e_3 = \gamma_5$.
+So, $A\gamma_1 = c - \gamma_5$. Repeating for the others, we get the following matrix:
+
+$[A]_{\gamma} = 
+\begin{bmatrix}
+    1 & 1 & 1 & 0 & 1 \\
+    1 & 1 & 1 & 1 & 0 \\
+    1 & 0 & 1 & 1 & 1 \\
+    1 & 1 & 1 & 1 & 1 \\
+    0 & 1 & 1 & 1 & 1 
+\end{bmatrix}$.
+\end{document}
