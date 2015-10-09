@@ -87,9 +87,51 @@
   mathescape
 }
 
-\lecture{Learning Feature Representations with K-means}{Krishnan Srinivasan}{4}{Jonathon Cai}
+\lecture{Learning Feature Representations with K-means}{Krishnan Srinivasan}{5}{Jonathon Cai}
 
 \section{Today}
 
+-- Paper Discussion
+
+\section{Derivation of $\argmax$ term}
+
+We would like to minimize
+
+\[
+\min_{s^{(i)}} ||Ds^{(i)} - x^{(i)}||^2_2
+\]
+
+given $D \in \R^{n \times k}$, $x^{(i)} \in \R^n$, and $s^{(i)} \in \R^k$.
+The $j$-th column vector of $D$ is denoted by $D^{(j)}$, where $\forall j$, the $l_2$ norms of $D^{(j)}$ are 1 and $s^{(i)}$ has at most one nonzero coordinate. It turns out that both these 
+assumptions -- the restriction on $D^{(j)}$ and the fact that $||s^{(i)}||_0 \leq 1$ -- are important for the analysis.
+
+For the moment assume that $s^{(i)}$ has a nonzero coordinate at $r = s^{(i)}_j$, where $r$ is a constant number.
+Then $Ds^{(i)} = rD^{(j)}$. So we would like to solve the equation:
+
+\[
+\dfrac{\partial}{\partial r} ||rD^{(j)} - x^{(i)}||^2_2 = 0
+\]
+
+Expanding yields 
+
+\begin{align*}
+\dfrac{\partial}{\partial r} \sum_k (rd_k - x_k)^2 &= 0\\
+\sum_k 2(rd_k - x_k)d_k &= 0\\
+r \sum_k  d^2_k &= \sum_k x_k d_k \\
+r &= \sum_k x_k d_k && \textrm{normalized } D^{(j)} \textrm{ assumption}\\
+r &= {D^{(j)}}^T x^{(i)}
+\end{align*}
+
+Now we will consider the minimum of the norm over all $j$. Let $r_j$ denote
+the $r$ corresponding to $j$. Note that:
+
+\begin{align*}
+\sum_k {(r_j d_k - x_k)}^2 &= \sum_k r^2_j d^2_k + x^2_k - 2r_j d_k x_k\\
+ &= r^2_j + \sum_k x^2_k - 2r^2_j\\
+ &= C - r^2_j && C = l_2 \textrm{ norm squared of } x^{(i)}\\
+\end{align*}
+
+Thus, for $||s^{(i)}||_0 \leq 1$, the norm is minimized when we maximize $|r_j|$, or
+when $j == \argmax_j |r_j|$.
 
 \end{document}
