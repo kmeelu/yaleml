@@ -95,7 +95,7 @@
 
 \section{Derivation of $\argmax$ term}
 
-We would like to minimize
+We would like to compute 
 
 \[
 \min_{s^{(i)}} ||Ds^{(i)} - x^{(i)}||^2_2
@@ -133,5 +133,27 @@ the $r$ corresponding to $j$. Note that:
 
 Thus, for $||s^{(i)}||_0 \leq 1$, the norm is minimized when we maximize $|r_j|$, or
 when $j == \argmax_j |r_j|$.
+
+Consider the geometric meaning of this statement. ${D^{(j)}}^T \cdot x^{(i)} = |D^{(j)}||x^{(i)}| \cos \theta = K \cos \theta$, where $K$ is a constant. Hence, 
+by maximizing $\cos \theta$, we are trying to minimize $\theta$, or the angle between the projection of $x^{(i)}$ onto the unit sphere and a centroid lying
+on the sphere.
+
+\section{ZCA Whitening}
+
+Suppose $X$ is a random vector with mean 0 and the covariance matrix $\E[X X^T]$ is positive definite (and hence invertible); since
+$V$ is also symmetric, we may decompose it, using the spectral decomposition, into $V = LDL^T$, where $L$ is orthogonal and $D$ 
+represents a diagonal matrix containing the eigenvalues. Let $K = \sqrt{{(D + \epsilon)}^{-1}} \approx \sqrt{D^{-1}}$.
+Recall that $K^T = D$ as $D$ is diagonal. Also $K^2 D = I$ by definition. 
+
+Now consider the ZCA transformation denoted by the transformation $T(X) = LKL^{-1}X$. Let the transformed variable be $\tilde{X}$ and consider the variance of this term. 
+$\E$ is of course in front of each term.
+
+\begin{align*}
+\tilde{X}\tilde{X}^T &= LKL^{-1}LDL^TL^{-T}KL^T\\
+ &= LL^T\\
+ &= I
+\end{align*}
+
+Thus, ZCA whitening approximately results in spherical variance.
 
 \end{document}
