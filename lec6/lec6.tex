@@ -1,0 +1,283 @@
+\documentclass[twoside]{article}
+
+\usepackage{amsmath,amsthm,amssymb,epsfig}
+\usepackage{hyperref}
+\usepackage[numbers]{natbib}
+\usepackage{textcomp}
+\usepackage{listings}
+\usepackage [english]{babel}
+\usepackage [autostyle, english = american]{csquotes}
+\MakeOuterQuote{"}
+
+\theoremstyle{definition}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+\newenvironment{pf}{{\noindent\sc Proof. }}{\qed}
+\newenvironment{map}{\[\begin{array}{cccc}} {\end{array}\]}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\unif}{\operatorname{unif}}
+
+\newcommand{\comment}[1]{}
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem*{exmp}{Example}
+\newtheorem*{prob}{Problem}
+
+\theoremstyle{remark}
+\newtheorem*{rem}{Remark}
+\newtheorem*{note}{Note}
+\newtheorem*{exer}{Exercise}
+
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0 in}
+\setlength{\parskip}{0.1 in}
+\everymath{\displaystyle}
+
+\newcommand{\widgraph}[2]{\includegraphics[keepaspectratio,width=#1]{#2}}
+\newcommand{\widgraphr}[3]{\includegraphics[keepaspectratio,width=#1,angle=#3]{#2}}
+
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf ML Reading Group (Fall 2015) \hfill Lecture: #3} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\Large \hfill #1  \hfill} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\it Lecturer: #2 \hfill} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{#1}{#1}
+   \vspace*{4mm}
+}
+
+
+%%%%%%%
+% Some commonly used notation
+%%%%%%%
+
+\def\R{{\mathbb R}}
+\def\X{{\mathcal X}}
+\def\Y{{\mathcal Y}}
+\def\E{{\mathbb E}}
+\def\pr{{\mathbb P}}
+\def\sign{{\rm sign}}
+
+\newcommand{\percent}{$\%$}
+
+\begin{document}
+
+\lstset{
+  basicstyle=\ttfamily,
+  mathescape
+}
+
+\lecture{Large-Scale Machine Learning with Stochastic Gradient Descent}{Kshitijh Meelu}{6}
+
+\section{Today}
+
+\begin{description}
+	\item[Recall] Gradient definition and properties
+	\item[Generalize] Gradient Descent and Stochastic Gradient Descent
+	\item[Apply] Generalization to Learning Systems
+	\item[Analyze] Asymptotic behaviors of GD and SGD
+\end{description}
+
+\section{Quick Summary}
+
+Author recaps decades of work on gradient descent and stochastic gradient descent, applying these methods to well-known learning algorithms and analyzing their convergence/asymptotic behavior.
+
+\section{Recall: Gradients}
+
+Given $n$ variables, $x_1, x_2, ..., x_n$, we define the function,
+
+$$ w = f(x_1, x_2, ..., x_n) $$
+
+Now, we define the gradient as,
+\begin{equation}
+grad(w) = \triangledown w = \langle \frac{\partial w}{\partial x_1}, \frac{\partial w}{\partial x_2}, ..., \frac{\partial w}{\partial x_n} \rangle
+\end{equation}
+
+We can also prove the following formula regarding gradients and gradient directions, which is a direct cause for their use in machine learning optimization.
+
+\begin{thm}
+Let $w = f(x_1, x_2, ..., x_n)$. We can show that at any point $P = (x_{1_0}, x_{2_0}, ..., x_{n_0})$, on a level surface $f(x_1, x_2, ..., x_n) = c$, where $c$ is a constant, the gradient $\triangledown f |_{P} $ is perpendicular to the level surface.
+\end{thm}
+
+\begin{proof}
+The proof is left as an exercise in partial derivatives and multivariate calculus. Please refer to \url{http://ocw.mit.edu/courses/mathematics/18-02sc-multivariable-calculus-fall-2010/2.-partial-derivatives/part-b-chain-rule-gradient-and-directional-derivatives/session-36-proof/}, to view the solution.
+\end{proof}
+
+%\[
+%x
+%=
+%\begin{pmatrix}
+%    x_{1} \\
+%    x_{2} \\
+%    \vdots \\
+%    x_{n} 
+%\end{pmatrix}
+%\]
+
+
+\section{Gradient Descent and Stochastic Gradient Descent}
+
+\textbf{Cost Function.} Now, we use the general properties of gradients to define an algorithm to minimize cost of a learning system. We start by considering a simple supervised learning system. Because it is considered supervised, we have training examples, $z$, which consist of pairs $(x, y)$. Here, $x$ is some input and $y$ is a scalar output. 
+
+Let $\hat{y}$ be some arbitrary prediction from input $x$ when the actual output is $y$. We define $\ell(\hat{y}, y)$ to be the cost, or loss, function of predicting $\hat{y}$ when the right answer is $y$.
+
+Now, we consider a family $\mathcal{F}$ of functions, $f_w(x)$, which take input $x$ and apply this functional family, where $f_w$ corresponds to the function parametrized by weight vector $w$. For this function, uniquely identified by its weight vector $w$, we define the cost function,
+
+$$Q(z, w) = \ell(f_w(x), y)$$
+
+An example of a cost function would be linear regression, where $f_w = w^T x$, and
+
+$$Q(z, w) = ||w^T x - y||^2$$
+
+\textbf{Expected/Averaged Cost Function.} To optimize the function, we seek function $f \in \mathcal{F}$ that minimizes $Q(z,w)$ averaged on examples. To do so exactly, we would like to average over the distribution $dP(z)$, which takes into account that some training examples $z$ are more probable than others. The following is the expected risk,
+
+$$ E(f) = \int \ell(f(x), y) dP(z) $$
+
+Because $dP(z)$ is an unknown distribution, we settle for a uniform distribution over all $n$ training examples, giving the empirical risk, 
+
+$$ E_n (f) = \frac{1}{n} \sum_{i=1}^{n} \ell(f(x_i), y_i) $$
+
+As an example, we give the expected cost function for linear regression:
+
+$$ E_n (f) = \frac{1}{n} \sum_{i=1}^{n} ||w^T x - y||^2 $$
+
+\textbf{Gradient Descent.} To minimize $E_n (f)$, we first use gradient descent (GD), where the weights $w$ are iteratively updated based on the gradient of the averaged cost function, $E_n (f_w)$,
+
+$$ w_{t+1} = w_t - \gamma  \frac{1}{n} \sum_{i=1}^{n} \triangledown_w Q(z_i, w_t) $$
+
+We note that $\gamma$ here is a chose gain, or step, that defines how much the weights change per iteration. Under sufficient regularity assumptions, with sufficiently small $\gamma$, this gradient descent achieves linear convergence, which is, $- log \rho \sim t$. 
+
+Note: this version of gradient descent is considered batch gradient descent, as all training examples are batched and computed on to take one step.
+
+\textbf{Stochastic Gradient Descent.} This is a simplification of gradient descent, which allows for faster computation times, especially because the machine does not have to sum over all training examples to move just \emph{one step}. Instead, each step requires just one randomly chosen training example (normally randomization is done at the beginning). Although the algorithm is simpler, this method comes with more difficult analysis (although for SGD, especially, tons of work have been done to prove it's correctness and ability to work).
+
+Below, we define the iterative function of stochastic gradient descent.
+
+$$ w_{t+1} = w_t - \gamma \triangledown_w Q(z_t, w_t) $$
+
+Note that studies show that convergence requires decreasing values of $\gamma$, such that both $\sum_t \gamma_t^2 < \infty$ and $\sum_t \gamma_t = \infty$ are satisfied. The speed of convergence is limited by the noisiness of the training examples. Under sufficient conditions, however, the best convergence speed comes from $\gamma_t \sim t^{-1}$. The expected residual error is then, $\mathbb{E} \rho \sim t^{-1}$.
+
+\section{Applications to Popular Learning Systems}
+
+Given the table with cost functions in the paper, deriving the stochastic gradient descent iterative function is an exercise in partial derivatives. For this reason, I plan to calculate most of the iterative functions. However, for this overview, I will go over two of them: Adaline and K-Means.
+
+\textbf{Adeline} This learning system is a very slightly modified and generalized version of linear regression. We learn from the table that the cost function is,
+
+$$ Q_{adaline} = \frac{1}{2} (y - w^T \Phi (x))^2 $$
+Here, $\Phi(x) \in \mathbb{R}^{d}$ appends an $x_0 = 1$, $y = \pm 1$.
+
+We know see that,
+
+\begin{equation} 
+\begin{split}
+ w_{t+1} & := w_t + \gamma_t \frac{\partial }{\partial w_t} Q_{adaline} \\
+ & :=  w_t + \gamma_t (y_t - w^T \Phi (x_t)) \Phi (x_t)
+\end{split}
+\end{equation}
+
+\textbf{K-Means} The following unsupervised learning system groups all points in clusters around centroids. Rather than having $z$, which are training examples with actual output, we have a list of inputs, $x_1, ..., x_n$. On each repeat, the K-Means algorithm goes through all inputs, assigning each to the centroid that is closest to them. The next step is to compute a new centroid at the average of all points that are covered/clustered around the centroid. This can converge and lead to nice clusters, or it could get messy.
+
+Here, we may define the cost function, 
+
+$$ Q_{means} = \min_k \frac{1}{2} (z - w_k)^2 $$
+
+Here, $z$ is an input, whereas the $w_k$ is a centroid.
+
+Then, we first find the centroid closest to the current input, $z_i$:
+
+$$k* = arg \min_k (z_t - w_k)^2$$
+
+Then, we update how many points are clustered around this specific centroid,
+
+$$n_{k*} := n_{k*} +1$$
+
+Now, we derive the iterative function, 
+
+\begin{equation}
+\begin{split}
+ w_{t+1} & := w_t + \gamma_t \frac{\partial }{\partial w_t} Q_{kmeans} \\
+ & :=  w_t + \frac{1}{n_{k*}} (z_t - w_{k*})
+\end{split}
+\end{equation}
+
+\section{Asymptotic Analysis}
+
+Now,we observe the errors involved with such large scale learning, and later, we will approximate certain measures across many different gradient descent algorithms.
+
+First, note that in learning with large training sets, we will have multiple errors. Let $f^* = arg min_f E(f)$ be the pest prediction function. Because we are only observing functions in the family of functions, $\mathcal{F}$, we can denote $f^*_{\mathcal{F}} = arg min_{f \in \mathcal{F}} E(f)$ as the best function in this family. Even then, because we optimize the \emph{empirical risk}, not the expected risk, our empirical optimum can be denoted as, $f_n = arg min_{f \in \mathcal{F}} E_n(f)$.
+
+Furthermore, because optimization, i.e. finding the minimum in SGD, is costly, we will stop when our algorithm reach a solution $\tilde{f}_n$ that is close enough to the minimum, such that $E_n(\tilde{f}_n) < E_n(f_n) + \rho$, for some predefined $\rho$.
+
+We now define and decompose the error into three separate parts:
+
+\begin{equation}
+\begin{split}
+ \varepsilon & = \varepsilon_{app}  + \varepsilon_{est} + \varepsilon_{opt} \\
+ & =  \mathbb{E}[E(f^*_{\mathcal{F}}) - E(f^*)]  +  \mathbb{E}[E(f_n) - E(f^*_{\mathcal{F}})] + \mathbb{E}[E(\tilde{f}_n) - E(f_n)]
+\end{split}
+\end{equation}
+
+Thus, given constraints on computation time, by $T_{max}$, and the maximal training set $n_{max}$, we understand that we must perform the following optimization of our optimization (meta):
+
+$$ \min_{\mathcal{F}, \rho, n} \varepsilon =  \varepsilon_{app}  + \varepsilon_{est} + \varepsilon_{opt}$$
+
+subject to $n \leq n_{max}$ and $T(\mathcal{F}, \rho, n) \leq T_{max}$.
+
+From this equation we notice two cases. In small-scale learning problems, we are first contained by the number of training examples, $n$. Computing time, here, is not an issue. In large-scale learning problems, we are more limited by our approximation, $\rho$.
+
+Moving on, from some magical mathematics to which I am not keen, we can asymptotically approximate that,
+
+$$\varepsilon \sim \varepsilon_{app} \sim \varepsilon_{est} \sim \varepsilon_{opt} \sim \bigg(\frac{log n}{n}\bigg)^\alpha \sim \rho$$
+
+Now, we can approximate the time it takes for gradient descent and stochastic gradient descent to reach some predefined excess error $\varepsilon$. We first show gradient descent.
+
+\begin{description}
+	\item[Time per iteration ---] $n$, as all $n$ training examples must be examined before the iteration can be made
+	\item[Iterations to accuracy $\rho$ ---] $log \frac{1}{\rho}$, which was given in the description of gradient descent
+	\item[Time to accuracy $\rho$ ---] $n log \frac{1}{\rho}$, as this is Time per iteration $x$ Iterations to accuracy $\rho$
+	\item[Time to excess error $\varepsilon$ ---]  $\frac{1}{\varepsilon^{\frac{1}{\alpha}}} log^2 \frac{1}{\varepsilon}$, which can be calculated from the asymptotical approximations above
+\end{description}
+
+Now, we show the same for stochastic gradient descent.
+
+\begin{description}
+	\item[Time per iteration ---] $1$, as only one must be examined before each iteration can be made
+	\item[Iterations to accuracy $\rho$ ---] $\frac{1}{\rho}$, which was given in the description of stochastic gradient descent
+	\item[Time to accuracy $\rho$ ---] $frac{1}{\rho}$, as this is Time per iteration $x$ Iterations to accuracy $\rho$
+	\item[Time to excess error $\varepsilon$ ---]  $\frac{1}{\varepsilon}$, which can be calculated from the asymptotical approximations above
+\end{description}
+
+We can now have further discussion on all topics presented.
+
+
+\section{Conclusion}
+
+This should give a general overview of the many parts to this paper. Some further areas to look into are:
+\begin{itemize}
+  \item Convergence Properties: How are the convergence formulas calculated
+  \item Asymptotic Analyses: Probabilities behind these analyses
+  \item GD and SGD on other learning systems
+  \item Second Order GD/SGD: Reference the following link, \url{http://ocw.mit.edu/courses/mathematics/18-409-topics-in-theoretical-computer-science-an-algorithmists-toolkit-fall-2009/lecture-notes/MIT18_409F09_scribe21.pdf}, pg. 4 
+\end{itemize}
+
+\end{document}
